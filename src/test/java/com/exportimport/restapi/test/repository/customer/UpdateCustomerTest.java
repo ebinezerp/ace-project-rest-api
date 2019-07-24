@@ -1,12 +1,8 @@
-package com.exportimport.restapi.customer.repository;
+package com.exportimport.restapi.test.repository.customer;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
-import java.sql.SQLIntegrityConstraintViolationException;
-
-import javax.transaction.TransactionalException;
-import javax.validation.ConstraintViolationException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,9 +13,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.TransactionSystemException;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.exportimport.restapi.model.Customer;
 import com.exportimport.restapi.repository.CustomerRepository;
@@ -39,36 +32,30 @@ public class UpdateCustomerTest {
 	public void setup() {
 		customer = CustomerInstanceProvider.getCustomer();
 		customerRepository.save(customer);
+		customer = customerRepository.findById(this.customer.getId()).get();
 	}
 
 	@Test
 	public void updateCustomerTest() {
-		Customer customer = customerRepository.findById(this.customer.getId()).get();
 		customer.setUsername("ebinezerp");
-		assertNotNull(customerRepository.save(customer));
+		customer = customerRepository.save(customer);
+		assertNotNull(customer);
+		assertNotNull(customerRepository.findById(customer.getId()).get());
+		assertThat(customerRepository.findById(customer.getId()).get().getUsername()).isEqualTo("ebinezerp");
 	}
 
 	@Test(expected = Exception.class)
-	@Transactional(propagation = Propagation.SUPPORTS)
 	public void updateCustomerWithNullUsernameTest() {
-		Customer customer = customerRepository.findById(this.customer.getId()).get();
 		customer.setUsername(null);
-		assertNull(customerRepository.save(customer));
+		assertNull(customerRepository.saveAndFlush(customer));
 	}
 
-	/*
-	 * @Test(expected = DataIntegrityViolationException.class)
-	 * 
-	 * @Transactional(propagation = Propagation.NOT_SUPPORTED) public void
-	 * updateCustomerWithDuplicateUsernameTest() { Customer customer =
-	 * CustomerInstanceProvider.getCustomerForDuplicate();
-	 * customerRepository.save(customer); Customer fetechedCustomer =
-	 * customerRepository.findById(customer.getId()).get();
-	 * fetechedCustomer.setUsername(this.customer.getUsername());
-	 * assertNull(customerRepository.save(fetechedCustomer)); }
-	 */
-	
-	
-	
-	
+	@Test(expected = DataIntegrityViolationException.class)
+	public void updateCustomerWithDuplicateUsernameTest() {
+		Customer duplicateCustomer = CustomerInstanceProvider.getCustomerForDuplicate();
+		customerRepository.save(duplicateCustomer);
+		customer.setUsername(duplicateCustomer.getUsername());
+		assertNull(customerRepository.saveAndFlush(customer));
+	}
+
 }

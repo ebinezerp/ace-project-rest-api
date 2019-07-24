@@ -1,9 +1,8 @@
-package com.exportimport.restapi.customer.repository;
+package com.exportimport.restapi.test.repository.customer;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import javax.transaction.TransactionalException;
 import javax.validation.ConstraintViolationException;
 
 import org.junit.Before;
@@ -16,8 +15,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.exportimport.restapi.RestapiApplication;
 import com.exportimport.restapi.model.Customer;
