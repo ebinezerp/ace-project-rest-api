@@ -68,4 +68,13 @@ public class CustomerService {
 			return null;
 		}
 	}
+	
+	public Customer getCustomerByMobile(String mobile) {
+		try {
+			return customerRepository.findByMobile(mobile);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
