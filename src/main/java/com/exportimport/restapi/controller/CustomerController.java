@@ -44,9 +44,10 @@ public class CustomerController {
 		if (errorMessages.size() > 0) {
 			throw new CustomerExistenceException(errorMessages);
 		}
+		
 
 		if (customerService.save(customer) == null) {
-			new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "some error occured");
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "some error occured");
 		}
 
 		return new ResponseEntity<Customer>(customer, HttpStatus.CREATED);
